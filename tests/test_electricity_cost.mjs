@@ -1,0 +1,22 @@
+import assert from 'node:assert/strict';
+import {bandAt,splitDuration,ElectricityCostHistory,priceElectricity} from '../cloud/electricity-cost.js';
+const t=s=>Date.parse('2026-11-09T'+s+'Z');
+const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-8,`${a} != ${b}`);
+const rows=(start,end,energy)=>[{timestamp:new Date(start).toISOString(),elec_import_kwh:100},{timestamp:new Date(end).toISOString(),elec_import_kwh:100+energy}];
+const period=(start,end,energy)=>({from:new Date(start).toISOString(),to:new Date(end).toISOString(),energy_kwh:energy,status:'measured',estimated:false});
+assert.equal(bandAt(t('06:59:59')),'night');assert.equal(bandAt(t('07:00:00')),'day');assert.equal(bandAt(t('22:59:59')),'day');assert.equal(bandAt(t('23:00:00')),'night');
+let start=t('00:00:00'),end=Date.parse('2026-11-10T00:00:00Z');
+assert.deepEqual(splitDuration(start,end),{day:16*3600000,night:8*3600000});
+let h=new ElectricityCostHistory(rows(start,end,24)),p=h.price(period(start,end,24));
+near(p.day_kwh,16);near(p.night_kwh,8);near(p.supplier_cost_isk,224.88);near(p.distribution_cost_isk,289.2);near(p.usage_cost_isk,514.08);near(p.night_saving_isk,28.08);assert.equal(p.cost_estimated,true);
+for(const [a,b,rate] of [['01:00:00','02:00:00',19.08],['10:00:00','11:00:00',22.59]]){const lo=t(a),hi=t(b);near(new ElectricityCostHistory(rows(lo,hi,1)).price(period(lo,hi,1)).usage_cost_isk,rate);}
+start=t('22:59:30');end=t('23:00:30');h=new ElectricityCostHistory(rows(start,end,1));p=h.price(period(start,end,1));near(p.day_kwh,.5);near(p.night_kwh,.5);near(p.usage_cost_isk,20.835);assert.equal(p.cost_estimated,true);
+p=h.price(period(t('23:00:00'),end,.5));near(p.day_kwh,0);near(p.night_kwh,.5);near(p.usage_cost_isk,9.54);
+p=h.price(period(start,end,0));near(p.usage_cost_isk,0);near(p.day_kwh+p.night_kwh,0);
+assert.equal(h.price({...period(start,end,1),status:'reset',energy_kwh:null}).usage_cost_isk,null);
+assert.equal(h.price({energy_kwh:null}).night_kwh,null);
+h=new ElectricityCostHistory([{timestamp:new Date(t('01:00:00')).toISOString(),elec_import_kwh:100},{timestamp:new Date(t('02:00:00')).toISOString(),elec_import_kwh:5},{timestamp:new Date(t('03:00:00')).toISOString(),elec_import_kwh:7}]);
+near(h.price(period(t('02:00:00'),t('03:00:00'),2)).usage_cost_isk,38.16);
+const e=priceElectricity({daily:[period(start,end,1)],intervals:[],trends:{}},rows(start,end,1),t('23:01:00'));
+assert.equal(e.pricing.current_band,'night');near(e.pricing.current_total_price_per_kwh_isk,19.08);assert.equal(e.pricing.distribution.confirmed,false);assert.equal(e.pricing.supplier.confirmed,true);assert.equal(e.pricing.fixed_fees_in_usage_totals,false);
+console.log('Electricity prices: 07/23 boundaries, midnight, day/night reconciliation, gap allocation, missing data, resets, fixed-fee exclusion and unconfirmed distribution verified.');

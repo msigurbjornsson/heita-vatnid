@@ -1,0 +1,10 @@
+{
+  "p1_host": "192.168.1.100",
+  "poll_interval_seconds": 60,
+  "http_timeout_seconds": 5,
+  "db_path": "data/readings.db",
+  "dashboard_port": 8080,
+  "hot_water_price_per_m3_isk": null,
+  "veitur_tariff": null,
+  "veitur_meter_class": null
+}

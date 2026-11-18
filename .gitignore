@@ -1,0 +1,22 @@
+node_modules/
+.cloudflare/
+web/.cloudflare/
+dist/
+data/
+logs/
+__pycache__/
+*.pyc
+.DS_Store
+config.json
+relay.config.json
+.env
+.env.*
+*.db
+*.db-*
+*.sqlite*
+*.tar.gz
+*.log
+launchd/local.heita-vatnid.plist
+
+# Sanitized setup template is intentionally public.
+!examples/relay.config.json

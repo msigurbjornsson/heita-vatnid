@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+<key>Label</key><string>local.heita-vatnid</string>
+<key>ProgramArguments</key><array><string>/ABSOLUTE/PATH/TO/python3</string><string>/ABSOLUTE/PROJECT/PATH/p1_reader.py</string></array>
+<key>WorkingDirectory</key><string>/ABSOLUTE/PROJECT/PATH</string>
+<key>RunAtLoad</key><true/><key>KeepAlive</key><true/>
+<key>ThrottleInterval</key><integer>30</integer>
+<key>StandardOutPath</key><string>/ABSOLUTE/PROJECT/PATH/logs/launchd.out.log</string>
+<key>StandardErrorPath</key><string>/ABSOLUTE/PROJECT/PATH/logs/launchd.err.log</string>
+</dict></plist>

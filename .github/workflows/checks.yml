@@ -1,0 +1,29 @@
+name: Checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.18.0'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: python3 -m unittest discover -s tests
+      - run: for test in tests/test_*.mjs; do node "$test"; done
+      - run: npm run check
+      - name: Build with synthetic deployment settings (no cloud requests)
+        run: |
+          mkdir -p data/private
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          Path('data/private/cloudflare.json').write_text(json.dumps({'account_id':'0'*32,'database_id':'00000000-0000-0000-0000-000000000001','worker_name':'test-p1-dashboard'}))
+          PY
+          npm run build

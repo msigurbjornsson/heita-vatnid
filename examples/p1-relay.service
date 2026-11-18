@@ -1,0 +1,22 @@
+[Unit]
+Description=HomeWizard P1 meter collector and durable uploader
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=p1relay
+Group=p1relay
+WorkingDirectory=/opt/p1-relay
+ExecStart=/usr/bin/python3 /opt/p1-relay/p1_relay.py --config /opt/p1-relay/relay.config.json
+Restart=always
+RestartSec=30
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/p1-relay/data /opt/p1-relay/logs
+
+[Install]
+WantedBy=multi-user.target

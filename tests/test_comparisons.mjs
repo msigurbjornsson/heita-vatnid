@@ -1,0 +1,27 @@
+import assert from 'node:assert/strict';
+import {calendarPeriods,buildComparisons,comparisonQuery} from '../cloud/comparisons.js';
+const now=Date.parse('2026-11-08T19:00:00Z');
+assert.equal(calendarPeriods('day',now).length,14);
+assert.equal(calendarPeriods('week',now).at(-1).start,'2026-11-02T00:00:00.000Z');
+assert.equal(calendarPeriods('week',Date.parse('2027-01-01T10:00:00Z')).at(-1).start,'2026-12-28T00:00:00.000Z');
+const leap=calendarPeriods('month',Date.parse('2028-03-31T12:00:00Z'));
+assert.equal(leap.at(-2).start,'2028-02-01T00:00:00.000Z');assert.equal(leap.at(-2).end,'2028-03-01T00:00:00.000Z');
+assert.equal((Date.parse(leap.at(-2).end)-Date.parse(leap.at(-2).start))/86400000,29);
+assert.throws(()=>calendarPeriods('bad',now));assert.throws(()=>comparisonQuery('bad'));
+const sample=(bucket,first,last,volume,resets=0)=>({bucket,first_at:first,last_at:last,samples:100,first_m3:100,last_m3:100+volume,resets});
+const rows=[sample('2026-11-06','2026-11-06T00:00:30Z','2026-11-06T23:59:30Z',2),sample('2026-11-07','2026-11-07T00:00:30Z','2026-11-07T23:59:30Z',3),sample('2026-11-08','2026-11-08T00:00:30Z','2026-11-08T18:59:30Z',1)];
+let result=buildComparisons('day',rows,227.56,now);
+assert.equal(result.periods.at(-1).status,'ongoing');assert.equal(result.periods.at(-1).complete,false);
+assert.equal(result.periods.at(-2).complete,true);assert.equal(result.periods.at(-2).usage_cost_isk,682.68);
+assert.equal(result.comparison.percent,50);assert.equal(result.comparison.difference_m3,1);
+assert.equal(result.periods[0].volume_m3,null);assert.equal(result.periods[0].usage_cost_isk,null);
+result=buildComparisons('day',[sample('2026-11-07','2026-11-07T23:34:00Z','2026-11-07T23:59:30Z',.065)],227.56,now);
+assert.equal(result.periods.at(-2).status,'partial');assert.equal(result.comparison,null);
+assert.equal(result.periods.at(-2).volume_m3,.065);
+result=buildComparisons('day',[sample('2026-11-07','2026-11-07T00:00:00Z','2026-11-07T23:59:30Z',10,1)],227.56,now);
+assert.equal(result.periods.at(-2).volume_m3,null);assert.equal(result.periods.at(-2).status,'reset');
+console.log('Calendar comparisons: Monday weeks, year boundaries, leap months, coverage, resets, costs and fair percentage comparisons passed.');
+
+const truncatedMonth=buildComparisons('month',[sample('2026-11-01','2026-11-07T23:34:00Z','2026-11-08T18:00:00Z',4)],227.56,now);
+assert.equal(truncatedMonth.periods.at(-1).status,'ongoing_partial');
+assert.equal(truncatedMonth.comparison,null);

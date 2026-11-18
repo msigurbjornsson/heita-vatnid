@@ -1,0 +1,14 @@
+{
+  "provider": "Veitur",
+  "effective_from": "2025-12-01",
+  "verified_on": "2026-11-08",
+  "source_url": "https://eu-assets.contentstack.com/v3/assets/blt5bf0023ca96cf071/blt248fb59a82f252be/6929b32b00d62c75044ce9c8/Heitt_vatn_01.12.2025_vefbirting.pdf",
+  "listing_url": "https://www.veitur.is/verdskrar",
+  "includes_vat_percent": 11,
+  "includes_water_tax_percent": 2,
+  "meter_classes": {"A": "15–20 mm", "B": "25–32 mm", "C": "40–50 mm", "D": "65 mm og stærri"},
+  "tariffs": {
+    "H1": {"label": "Þéttbýli · H1A–D", "price_per_m3_isk": 227.56, "fixed_per_day_isk": {"A": 101.90, "B": 424.58, "C": 1018.98, "D": 2547.45}},
+    "J1": {"label": "Dreifbýli · J1A–D", "price_per_m3_isk": 300.29, "fixed_per_day_isk": {"A": 115.34, "B": 479.50, "C": 1150.80, "D": 2873.68}}
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "p1_host": "192.168.1.100",
+  "poll_interval_seconds": 30,
+  "upload_interval_seconds": 60,
+  "http_timeout_seconds": 5,
+  "collector_id": "home-collector",
+  "outbox_path": "data/outbox.db",
+  "ingest_url": "https://YOUR-WORKER.YOUR-SUBDOMAIN.workers.dev/ingest",
+  "write_token": "REPLACE_WITH_YOUR_RANDOM_SECRET"
+}

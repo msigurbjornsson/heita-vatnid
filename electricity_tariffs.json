@@ -1,0 +1,28 @@
+{
+  "verified_on": "2026-11-09",
+  "currency": "ISK",
+  "timezone": "Atlantic/Reykjavik",
+  "vat_percent": 24,
+  "supplier": {
+    "name": "Straumlind",
+    "plan": "Ódýrara rafmagn á nóttunni",
+    "confirmed": true,
+    "day_start_hour": 7,
+    "night_start_hour": 23,
+    "day_price_per_kwh_isk": 10.54,
+    "night_price_per_kwh_isk": 7.03,
+    "source_url": "https://www.straumlind.is/vorur"
+  },
+  "distribution": {
+    "name": "Veitur",
+    "tariff": "A1D",
+    "confirmed": false,
+    "effective_from": "2026-07-01",
+    "price_per_kwh_isk": 12.05,
+    "fixed_per_day_isk": 59.97,
+    "includes": ["dreifing", "flutningur", "jöfnunargjald"],
+    "source_url": "https://eu-assets.contentstack.com/v3/assets/blt5bf0023ca96cf071/blt79433590fc2d4917/6a44d0d25533055a363571ad/Raforkudreifing_01.07.2026_vefbirting.pdf"
+  },
+  "fixed_fees_in_usage_totals": false,
+  "optional_services_included": false
+}

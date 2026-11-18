@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {ElectricityCostHistory,hsOrkaScenario} from '../cloud/electricity-cost.js';
+const history=new ElectricityCostHistory([0,1,6,12,24].map((hour,i)=>({timestamp:new Date(Date.UTC(2026,10,10,hour)).toISOString(),elec_import_kwh:[0,1,11,17,29][i]})));
+const period={from:'2026-11-10T00:00:00Z',to:'2026-11-11T00:00:00Z',energy_kwh:29,status:'measured',distribution_cost_isk:29*12.05,usage_cost_isk:600};
+const result=hsOrkaScenario(period,history);
+assert.equal(result.night_kwh,10);assert.equal(result.supplier_cost_isk,19*12.18);assert.equal(result.distribution_cost_isk,29*12.05);assert.equal(result.usage_cost_isk,19*12.18+29*12.05);assert.equal(result.saving_isk,600-result.usage_cost_isk);
+const during=hsOrkaScenario({...period,from:'2026-11-10T02:00:00Z',to:'2026-11-10T04:00:00Z',energy_kwh:4,distribution_cost_isk:4*12.05},history);
+assert.equal(during.supplier_cost_isk,0);assert.equal(during.usage_cost_isk,4*12.05,'Night electricity still incurs distribution');
+assert.equal(hsOrkaScenario({...period,energy_kwh:null},history).usage_cost_isk,null);
+assert.equal(hsOrkaScenario({...period,status:'reset'},history).usage_cost_isk,null);
+assert.equal(hsOrkaScenario(period,new ElectricityCostHistory([])).usage_cost_isk,null);
+console.log('HS scenario: 01–06 allocation, partial night, paid distribution, missing data and resets passed.');
