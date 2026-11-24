@@ -57,6 +57,7 @@ Python code uses only the standard library. Run:
 ```sh
 python3 -m unittest discover -s tests
 node tests/test_cloud.mjs
+node tests/test_heating_insights.mjs
 node tests/test_electricity_cost.mjs
 node tests/test_hs_orka.mjs
 node tests/test_plans.mjs
@@ -71,3 +72,9 @@ Cloud development uses the `cf` CLI, not Wrangler. See the hosting handbook for 
 Never commit `config.json`, `data/`, `logs/`, databases, backups, upload secrets, generated builds or installed service files. Use only the example templates in `examples/` for sharing. No accounts, secrets or data from an existing installation are included.
 
 MIT license; see [LICENSE](LICENSE). Third-party tariff facts and source links are references, not a guarantee of current prices or supplier endorsement.
+
+## Heating-system indications
+
+`cloud/heating-insights.js` evaluates raw water observations during the most recent hour. At least 90% valid interval coverage and a fresh water observation are required; missing water, invalid temperatures, stale M-Bus captures and polling gaps are not interpolated. Low cooling is indicated only after at least 54 minutes with a supply/return difference below 10 °C and flow of at least 100 L/h. These are provisional household thresholds, not validated fault or efficiency limits.
+
+Flow and supply-temperature changes use the median of the matching rolling hour on the preceding seven days, requiring at least three sufficiently covered days. Flow flags require a 50% change, with minimum flow and absolute-change guards; supply flags require a 5 °C drop with at least 20 L/h flow. Weather, domestic hot-water use and changed habits can explain changes. The water page displays evidence, thresholds and a system checklist; the overview links to active indications. Disconnected, stale, demo and imported views suppress active indications. Inlet readings do not diagnose individual radiators, leaks, filters or pressure regulators. Run `node tests/test_heating_insights.mjs` for persistence, baseline, missing-data, gap and freshness cases.

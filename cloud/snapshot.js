@@ -1,5 +1,6 @@
 import catalog from '../veitur_tariffs.json' with {type:'json'};
 import { priceElectricity } from './electricity-cost.js';
+import { heatingInsights } from './heating-insights.js';
 const windows=[1,5,15,30,60,180,360,720,1440,2880,10080];
 const ranges={'1h':[1,60],'3h':[5,36],'6h':[15,24],'12h':[30,24],'24h':[60,24],'7d':[360,28]};
 const stamp=t=>new Date(t*1000).toISOString();
@@ -27,7 +28,7 @@ export function buildSnapshot(rows,count,now=Date.now()) {
  const heating=latest&&['flow_m3h','temp_supply_c','temp_return_c'].every(k=>latest[k]!=null)?latest.flow_m3h*1000*4.186*(latest.temp_supply_c-latest.temp_return_c)/3600:null;
  const detail=buildDetails(rows,now);
  const fresh=latest&&now-Date.parse(latest.timestamp)<180000;
- return {mode:'live',...detail,latest,daily,water_usage:usage,pricing:{...catalog,tariff_code:'H1',tariff_label:catalog.tariffs.H1.label,price_per_m3_isk:price,basis:'veitur',meter_class:null,fixed_per_day_isk:null,fixed_rates:Object.entries(catalog.meter_classes).map(([cls,size])=>({class:cls,size,per_day_isk:catalog.tariffs.H1.fixed_per_day_isk[cls]}))},usage_quality:{today_estimated:daily[0].estimated,yesterday_estimated:daily[1].estimated,seven_days_estimated:seven.estimated},summary:{today_m3:daily[0].volume_m3,yesterday_m3:daily[1].volume_m3,seven_days_m3:seven.volume_m3,heating_kw:heating,current_cost_per_hour_isk:latest?.flow_m3h==null?null:latest.flow_m3h*price,today_cost_isk:daily[0].usage_cost_isk,yesterday_cost_isk:daily[1].usage_cost_isk,seven_days_cost_isk:seven.volume_m3==null?null:seven.volume_m3*price},health:{connected:!!fresh,last_success:latest?.timestamp??null,error:fresh?null:'Bíður eftir nýjum lestri frá UCG-Fiber.'},reading_count:count,poll_interval_seconds:latest?.poll_interval_seconds||60,upload_interval_seconds:latest?.upload_interval_seconds||60};
+ return {mode:'live',heating_insights:heatingInsights(rows,now),...detail,latest,daily,water_usage:usage,pricing:{...catalog,tariff_code:'H1',tariff_label:catalog.tariffs.H1.label,price_per_m3_isk:price,basis:'veitur',meter_class:null,fixed_per_day_isk:null,fixed_rates:Object.entries(catalog.meter_classes).map(([cls,size])=>({class:cls,size,per_day_isk:catalog.tariffs.H1.fixed_per_day_isk[cls]}))},usage_quality:{today_estimated:daily[0].estimated,yesterday_estimated:daily[1].estimated,seven_days_estimated:seven.estimated},summary:{today_m3:daily[0].volume_m3,yesterday_m3:daily[1].volume_m3,seven_days_m3:seven.volume_m3,heating_kw:heating,current_cost_per_hour_isk:latest?.flow_m3h==null?null:latest.flow_m3h*price,today_cost_isk:daily[0].usage_cost_isk,yesterday_cost_isk:daily[1].usage_cost_isk,seven_days_cost_isk:seven.volume_m3==null?null:seven.volume_m3*price},health:{connected:!!fresh,last_success:latest?.timestamp??null,error:fresh?null:'Bíður eftir nýjum lestri frá UCG-Fiber.'},reading_count:count,poll_interval_seconds:latest?.poll_interval_seconds||60,upload_interval_seconds:latest?.upload_interval_seconds||60};
 }
 
 function buildDetails(rows,now) {

@@ -1,3 +1,4 @@
+import { renderHeatingInsights } from './heating-insights.js';
 import { createWaterComparison } from './comparison.js';
 import { initializePages, renderDetails } from './details.js';
 import { createTrendChart } from './trend.js';
@@ -69,6 +70,7 @@ function render() {
   renderUsage();
   drawChart();
   renderDetails(data,nf);
+  renderHeatingInsights(data,nf,{connected:connected&&!demo&&!imported});
   comparison.update(data);
 }
 function renderPricing() {

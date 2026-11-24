@@ -5,7 +5,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "deploy": "npm run build && cf deploy --prebuilt --mode production",
-    "check": "node --check web/app.js && node --check web/trend.js && node --check web/details.js && node --check cloud/worker.js && node --check cloud/snapshot.js && node --check web/comparison.js && node --check cloud/comparisons.js && node --check cloud/electricity-cost.js && node --check cloud/materialized.js && node --check web/electricity-plans.js && node --check web/plan-comparison.js"
+    "check": "node --check web/app.js && node --check web/trend.js && node --check web/details.js && node --check cloud/worker.js && node --check cloud/snapshot.js && node --check web/comparison.js && node --check cloud/comparisons.js && node --check cloud/electricity-cost.js && node --check cloud/materialized.js && node --check web/electricity-plans.js && node --check web/plan-comparison.js && node --check cloud/heating-insights.js && node --check web/heating-insights.js"
   },
   "devDependencies": {
     "cf": "1.0.0-beta.24",
